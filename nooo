@@ -1,0 +1,100 @@
+-- Roblox Lua Script for NoClip Menu
+
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local UIGradient = Instance.new("UIGradient")
+local Title = Instance.new("TextLabel")
+local ToggleButton = Instance.new("TextButton")
+local Status = Instance.new("TextLabel")
+
+-- Properties
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BackgroundTransparency = 0.2
+MainFrame.BorderSizePixel = 2
+MainFrame.Position = UDim2.new(0, 10, 0, 10)
+MainFrame.Size = UDim2.new(0, 150, 0, 100)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+    ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 0)),
+    ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0, 255, 0)),
+    ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 255, 255)),
+    ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+}
+UIGradient.Parent = MainFrame
+
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0, 5)
+Title.Size = UDim2.new(1, 0, 0, 20)
+Title.Font = Enum.Font.SourceSansBold
+Title.Text = "NOCLIP MENU"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
+
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Parent = MainFrame
+ToggleButton.Position = UDim2.new(0.5, -30, 0.5, -10)
+ToggleButton.Size = UDim2.new(0, 60, 0, 20)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(68, 68, 68)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Text = "OFF"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+Status.Name = "Status"
+Status.Parent = MainFrame
+Status.BackgroundTransparency = 1
+Status.Position = UDim2.new(0, 0, 1, -25)
+Status.Size = UDim2.new(1, 0, 0, 20)
+Status.Font = Enum.Font.SourceSans
+Status.Text = "Status: OFF"
+Status.TextColor3 = Color3.fromRGB(255, 0, 0)
+Status.TextSize = 12
+
+-- NoClip functionality
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local noclip = false
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+ToggleButton.MouseButton1Click:Connect(function()
+    noclip = not noclip
+    ToggleButton.Text = noclip and "ON" or "OFF"
+    ToggleButton.BackgroundColor3 = noclip and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(68, 68, 68)
+    Status.Text = "Status: " .. (noclip and "ON" or "OFF")
+    Status.TextColor3 = noclip and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+end)
+
+RunService.Stepped:Connect(function()
+    if noclip then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+player.CharacterAdded:Connect(function(char)
+    character = char
+end)
+
+-- Rainbow border animation
+spawn(function()
+    while wait() do
+        for i = 0, 1, 0.001 do
+            MainFrame.BorderColor3 = Color3.fromHSV(i, 1, 1)
+            wait()
+        end
+    end
+end)
